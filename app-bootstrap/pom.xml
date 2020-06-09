@@ -1,3 +1,25 @@
+<!--
+
+    Copyright 2003-2020 JADAPTIVE Limited. All Rights Reserved.
+
+    For product documentation visit https://www.jadaptive.com/
+
+    This file is part of Application Bootstrap.
+
+    Application Bootstrap is free software: you can redistribute it and/or modify
+    it under the terms of the GNU Lesser General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Application Bootstrap is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU Lesser General Public License
+    along with Application Bootstrap.  If not, see <http://www.gnu.org/licenses/>.
+
+-->
 <!-- Copyright (c) 2013 LogonBox Limited. All rights reserved. This program 
 	and the accompanying materials are made available under the terms of the 
 	GNU Public License v3.0 which accompanies this distribution, and is available 
@@ -5,16 +27,34 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
+	<groupId>com.sshtools</groupId>
 	<artifactId>app-bootstrap</artifactId>
-	<name>Hypersocket - Application Bootstrap</name>
+	<name>Application Bootstrap</name>
+	<version>1.0.0</version>
 
-	<parent>
-		<groupId>com.hypersocket</groupId>
-		<artifactId>hypersocket-enterprise</artifactId>
-		<version>2.2.2-LOCAL</version>
-		<relativePath>..</relativePath>
-	</parent>
-
+	<url>https://github.com/sshtools/app-bootstrap</url>
+	
+	<licenses>
+		<license>
+			<name>GNU General Public License</name>
+			<url>http://www.gnu.org/licenses/gpl.html</url>
+			<distribution>repo</distribution>
+		</license>
+	</licenses>
+	
+	<scm>
+		<url>https://github.com/sshtools/app-bootstrap/</url>
+		<connection>https://github.com/ludup/app-bootstrap.git</connection>
+	</scm>
+	
+	<developers>
+		<developer>
+			<id>lee</id>
+			<name>Lee David Painter</name>
+			<email>lee@sshtools.com</email>
+		</developer>
+	</developers>
+	
 	<dependencies>
 		<dependency>
 			<groupId>commons-io</groupId>
@@ -32,32 +72,16 @@
 		</dependency>
 	</dependencies>
 
-	<repositories>
+	<distributionManagement>
+		<snapshotRepository>
+			<id>ossrh-sshtools</id>
+			<url>https://oss.sonatype.org/content/repositories/snapshots</url>
+		</snapshotRepository>
 		<repository>
-			<id>opensource-snapshots</id>
-			<url>http://artifactory.javassh.com/opensource-snapshots</url>
-			<snapshots />
-			<releases>
-				<enabled>false</enabled>
-			</releases>
+			<id>ossrh-sshtools</id>
+			<url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
 		</repository>
-		<repository>
-			<id>opensource-releases</id>
-			<url>http://artifactory.javassh.com/opensource-releases</url>
-			<snapshots>
-				<enabled>false</enabled>
-			</snapshots>
-			<releases />
-		</repository>
-		<repository>
-			<id>ext-snapshots-local</id>
-			<url>http://artifactory.javassh.com/ext-snapshots-local</url>
-			<snapshots />
-			<releases>
-				<enabled>false</enabled>
-			</releases>
-		</repository>
-	</repositories>
+	</distributionManagement>
 
 	<build>
 		<plugins>
@@ -97,6 +121,101 @@
 						</configuration>
 					</execution>
 				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<version>3.1</version>
+				<configuration>
+					<source>1.8</source>
+					<target>1.8</target>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-source-plugin</artifactId>
+				<version>2.2.1</version>
+				<executions>
+					<execution>
+						<id>attach-sources</id>
+						<goals>
+							<goal>jar-no-fork</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<artifactId>maven-javadoc-plugin</artifactId>
+				<version>2.9.1</version>
+				<executions>
+					<execution>
+						<id>javadoc-jar</id>
+						<phase>package</phase>
+						<goals>
+							<goal>jar</goal>
+						</goals>
+						<configuration>
+							<!-- switch on dependency-driven aggregation -->
+							<includeDependencySources>false</includeDependencySources>
+							<dependencySourceIncludes>
+								<!-- include ONLY dependencies I control -->
+								<dependencySourceInclude>com.sshtools:*</dependencySourceInclude>
+							</dependencySourceIncludes>
+							<additionalparam>-Xdoclint:none</additionalparam>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-gpg-plugin</artifactId>
+				<version>1.5</version>
+				<executions>
+					<execution>
+						<id>sign-artifacts</id>
+						<phase>verify</phase>
+						<goals>
+							<goal>sign</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<groupId>com.mycila</groupId>
+				<artifactId>license-maven-plugin</artifactId>
+				<version>2.3</version>
+				<configuration>
+					<header>templates/GPL-3.txt</header>
+					<properties>
+						<owner>JADAPTIVE Limited</owner>
+						<email>support@jadaptive.com</email>
+					</properties>
+					<excludes>
+						<exclude>**/README</exclude>
+						<exclude>src/test/resources/**</exclude>
+						<exclude>src/main/resources/**</exclude>
+					</excludes>
+				</configuration>
+				<executions>
+					<execution>
+						<goals>
+							<goal>check</goal>
+							<goal>format</goal>
+							<goal>remove</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.sonatype.plugins</groupId>
+				<artifactId>nexus-staging-maven-plugin</artifactId>
+				<version>1.6.3</version>
+				<extensions>true</extensions>
+				<configuration>
+					<serverId>ossrh-sshtools</serverId>
+					<nexusUrl>https://oss.sonatype.org/</nexusUrl>
+					<autoReleaseAfterClose>true</autoReleaseAfterClose>
+				</configuration>
 			</plugin>
 		</plugins>
 		<pluginManagement>
