@@ -3,3 +3,7 @@
 *.classpath
 *.project
 /.settings/
+/tmp/
+/backups/
+/conf/
+/dist/
